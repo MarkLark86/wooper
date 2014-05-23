@@ -289,6 +289,15 @@ def assert_in(member, container, msg=None):
         fail(_formatMessage(msg, std_msg))
 
 
+def assert_not_in(self, member, container, msg=None):
+    """Just like self.assertTrue(a not in b), but with a nicer default message.
+    """
+    if member in container:
+        standardMsg = '%s unexpectedly found in %s' % (safe_repr(member),
+                                                       safe_repr(container))
+        fail(_formatMessage(msg, standardMsg))
+
+
 _type_equality_funcs = {
     str: assert_multiline_equal,
     list: assert_list_equal,
@@ -305,3 +314,13 @@ def assert_equal(first, second, msg=None):
     """
     assertion_func = _getAssertEqualityFunc(first, second)
     assertion_func(first, second, msg=msg)
+
+
+def assert_not_equal(first, second, msg=None):
+    """Fail if the two objects are equal as determined by the '!='
+       operator.
+    """
+    if not first != second:
+        msg = _formatMessage(msg, '%s == %s' % (safe_repr(first),
+                                                safe_repr(second)))
+        raise failureException(msg)

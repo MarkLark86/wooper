@@ -1,10 +1,12 @@
-from .assertions import assert_equal, assert_in
+from .assertions import (
+    assert_equal, assert_not_equal,
+    assert_in, assert_not_in)
 from .general import (
     parse_json_input, parse_json_response, apply_path)
 
 
-def assert_equal_and_print_body(context, first, second, msg):
-    assert_equal(
+def assert_and_print_body(context, assert_function, first, second, msg):
+    assert_function(
         first, second,
         """Status code not matches.
 Response body:
@@ -16,8 +18,9 @@ Response body:
 
 
 def expect_status(context, code):
-    assert_equal_and_print_body(
+    assert_and_print_body(
         context,
+        assert_equal,
         code, context.response.status_code,
         "Status code not matches.")
 
@@ -42,14 +45,39 @@ def expect_json_contains(context, json_input, path=None):
 
     if isinstance(json_input, dict):
         for key in json_input.keys():
-            assert_equal_and_print_body(
+            assert_and_print_body(
                 context,
+                assert_equal,
                 json_input[key], json_response[key],
                 "JSON not matches.")
     elif isinstance(json_input, int) or isinstance(json_input, str):
         assert_in(
             json_input, json_response,
             "JSON response does not contain such value")
+    else:
+        raise NotImplementedError("'{}' is not implemented"
+                                  .format(type(json_input)))
+
+
+def expect_json_not_contains(context, json_input, path=None):
+    """
+    checks if json response contains some json subset,
+    path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    """
+    json_input = parse_json_input(json_input)
+    json_response = apply_path(parse_json_response(context), path)
+
+    if isinstance(json_input, dict):
+        for key in json_input.keys():
+            assert_and_print_body(
+                context,
+                assert_not_equal,
+                json_input[key], json_response[key],
+                "JSON matches.")
+    elif isinstance(json_input, int) or isinstance(json_input, str):
+        assert_not_in(
+            json_input, json_response,
+            "JSON response contains such value")
     else:
         raise NotImplementedError("'{}' is not implemented"
                                   .format(type(json_input)))

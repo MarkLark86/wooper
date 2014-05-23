@@ -1,7 +1,10 @@
 from behave import then
 
 from ..expect import (
-    expect_status, expect_json_contains, expect_json_length)
+    expect_status,
+    expect_json, expect_json_length,
+    expect_json_contains, expect_json_not_contains,
+)
 from .general import get_context_input
 
 
@@ -10,9 +13,19 @@ def step_impl_status(context, status):
     expect_status(context, status)
 
 
+@then('json is')
+def step_impl_json_is(context):
+    expect_json(context, get_context_input(context))
+
+
 @then('json contains')
 def step_impl_json_contains(context):
     expect_json_contains(context, get_context_input(context))
+
+
+@then('json not contains')
+def step_impl_json_not_contains(context):
+    expect_json_not_contains(context, get_context_input(context))
 
 
 @then('{path} json contains')
