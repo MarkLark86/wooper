@@ -22,7 +22,7 @@ for 'behave' behavior-driven development testing library",
         'behave==1.2.5a1'
     ],
     dependency_links=[
-        "git+git://github.com/actionless/behave@master#egg=behave-1.2.5a1",
+        "https://github.com/actionless/behave/zipball/master#egg=behave-1.2.5a1",
     ],
     classifiers=[
         # @TODO: change status
