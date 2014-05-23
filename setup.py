@@ -19,11 +19,10 @@ for 'behave' behavior-driven development testing library",
     include_package_data=True,
     install_requires=[
         'requests==2.3.0',
-        'behave'
+        'behave==1.2.5a1'
     ],
     dependency_links=[
-        # "git+git://github.com/actionless/behave@master#egg=behave-123",
-        "git+git://github.com/actionless/behave@master#egg=behave",
+        "git+git://github.com/actionless/behave@master#egg=behave-1.2.5a1",
     ],
     classifiers=[
         # @TODO: change status
