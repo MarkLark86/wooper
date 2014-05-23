@@ -289,7 +289,7 @@ def assert_in(member, container, msg=None):
         fail(_formatMessage(msg, std_msg))
 
 
-def assert_not_in(self, member, container, msg=None):
+def assert_not_in(member, container, msg=None):
     """Just like self.assertTrue(a not in b), but with a nicer default message.
     """
     if member in container:
