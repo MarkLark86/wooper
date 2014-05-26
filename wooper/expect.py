@@ -8,13 +8,13 @@ from .general import (
 def assert_and_print_body(context, assert_function, first, second, msg):
     assert_function(
         first, second,
-        """Status code not matches.
+        """{message}.
 Response body:
 \"\"\"
 {body}
 \"\"\"
 """
-        .format(body=context.response.text))
+        .format(body=context.response.text, message=msg))
 
 
 def expect_status(context, code):
