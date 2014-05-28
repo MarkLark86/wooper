@@ -53,10 +53,20 @@ def parse_json_input(json_dict):
         return json_dict
 
 
+def get_body(context):
+    body = getattr(context.response, 'text', None)
+    if not body:
+        try:
+            body = context.response.data.decode("utf-8")
+        except UnicodeDecodeError:
+            body = context.response
+        except Exception:
+            fail("Response body is not text.")
+    return body
+
+
 def parse_json_response(context):
-    if not getattr(context.response, 'text', None):
-        context.response.text = context.response.data.decode("utf-8")
     try:
-        return json.loads(context.response.text)
+        return json.loads(get_body(context))
     except ValueError:
         fail_and_print_body(context, 'Response in not a valid JSON.')

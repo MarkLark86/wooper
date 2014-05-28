@@ -2,15 +2,18 @@ from .assertions import (
     assert_equal, assert_not_equal,
     assert_in, assert_not_in)
 from .general import (
-    parse_json_input, parse_json_response, apply_path)
+    parse_json_input, parse_json_response, apply_path, get_body)
 
 
 def assert_and_print_body(context, assert_function, first, second, msg):
-    if not getattr(context.response, 'text', None):
+    body = getattr(context.response, 'text', None)
+    if not body:
         try:
-            context.response.text = context.response.data.decode("utf-8")
+            body = context.response.data.decode("utf-8")
+        except UnicodeDecodeError:
+            body = context.response
         except Exception:
-            setattr(context.response, 'text', '%%%_not_text_%%%')
+            body = '%%%_not_text_%%%'
     assert_function(
         first, second,
         """{message}.
@@ -19,7 +22,7 @@ Response body:
 {body}
 \"\"\"
 """
-        .format(body=context.response.text, message=msg))
+        .format(body=body, message=msg))
 
 
 def expect_status(context, code):
@@ -124,7 +127,5 @@ def expect_json_length(context, length, path=None):
         length, len(json_response), "JSON objects count not matches.")
 
 
-def expect_body_contains(context, body):
-    if not getattr(context.response, 'text', None):
-        context.response.text = context.response.data.decode("utf-8")
-    assert_in(body, context.response.text, "Body not matches.")
+def expect_body_contains(context, text):
+    assert_in(text, get_body(context), "Body not matches.")
