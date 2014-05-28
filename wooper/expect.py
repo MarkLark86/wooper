@@ -99,22 +99,23 @@ def expect_json_not_contains(response, json_input, path=None):
                                   .format(type(json_input)))
 
 
-def expect_header(response, header, value, partly=False):
+def expect_headers_contains(response, header):
     assert_in(header,
               response.headers,
               "No such header in response.")
-    if partly:
-        assert_in(value.lower(),
-                  response.headers[header].lower(),
-                  "Header not matches.")
-    else:
-        assert_in(value.lower(),
-                  response.headers[header].lower(),
-                  "Header not matches.")
 
 
-def expect_header_contains(response, header, value):
-    expect_header(response, header, value, partly=True)
+def expect_headers(response, headers, partly=False):
+    for header, value in headers.items():
+        expect_headers_contains(response, header)
+        if partly:
+            assert_in(value.lower(),
+                      response.headers[header].lower(),
+                      "Header not matches.")
+        else:
+            assert_equal(value.lower(),
+                         response.headers[header].lower(),
+                         "Header not matches.")
 
 
 def expect_json_length(response, length, path=None):
