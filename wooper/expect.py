@@ -9,7 +9,7 @@ def assert_and_print_body(context, assert_function, first, second, msg):
     if not getattr(context.response, 'text', None):
         try:
             context.response.text = context.response.data.decode("utf-8")
-        except UnicodeDecodeError:
+        except Exception:
             context.response.text = '%%%fuzzy%%%'
     assert_function(
         first, second,
