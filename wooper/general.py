@@ -10,6 +10,17 @@ def fail(msg=None):
     raise failureException(msg)
 
 
+def fail_and_print_body(context, msg):
+    fail(
+        """{msg}
+Response body:
+\"\"\"
+{body}
+\"\"\"
+"""
+        .format(body=context.response.text, msg=msg))
+
+
 def apply_path(json_dict, path):
     if not path:
         return json_dict
@@ -46,4 +57,4 @@ def parse_json_response(context):
     try:
         return json.loads(context.response.text)
     except ValueError:
-        fail('Response in not a valid JSON.')
+        fail_and_print_body(context, 'Response in not a valid JSON.')
