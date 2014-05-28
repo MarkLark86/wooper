@@ -54,6 +54,8 @@ def parse_json_input(json_dict):
 
 
 def parse_json_response(context):
+    if not getattr(context.response, 'text', None):
+        context.response.text = context.response.data.decode("utf-8")
     try:
         return json.loads(context.response.text)
     except ValueError:
