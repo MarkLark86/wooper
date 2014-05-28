@@ -99,7 +99,7 @@ def expect_json_not_contains(response, json_input, path=None):
                                   .format(type(json_input)))
 
 
-def expect_headers_contains(response, header):
+def expect_headers_contain(response, header):
     assert_in(header,
               response.headers,
               "No such header in response.")
