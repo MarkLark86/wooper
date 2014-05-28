@@ -64,7 +64,7 @@ def DELETE(context, uri, *args, **kwargs):
 
 
 def json_response(context):
-    json_dict = parse_json_response(context)
+    json_dict = parse_json_response(context.response)
     return json_dict
 
 

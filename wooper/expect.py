@@ -5,13 +5,13 @@ from .general import (
     parse_json_input, parse_json_response, apply_path, get_body)
 
 
-def assert_and_print_body(context, assert_function, first, second, msg):
-    body = getattr(context.response, 'text', None)
+def assert_and_print_body(response, assert_function, first, second, msg):
+    body = getattr(response, 'text', None)
     if not body:
         try:
-            body = context.response.data.decode("utf-8")
+            body = response.data.decode("utf-8")
         except UnicodeDecodeError:
-            body = context.response
+            body = response.data
         except Exception:
             body = '%%%_not_text_%%%'
     assert_function(
@@ -25,44 +25,44 @@ Response body:
         .format(body=body, message=msg))
 
 
-def expect_status(context, code):
+def expect_status(response, code):
     assert_and_print_body(
-        context,
+        response,
         assert_equal,
-        code, context.response.status_code,
+        code, response.status_code,
         "Status code not matches.")
 
 
-def expect_status_in(context, codes):
+def expect_status_in(response, codes):
     assert_and_print_body(
-        context,
+        response,
         assert_in,
-        context.response.status_code, codes,
+        response.status_code, codes,
         "Status code not matches.")
 
 
-def expect_json(context, json_input, path=None):
+def expect_json(response, json_input, path=None):
     """
     checks if json response equals some json,
     path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     """
     json_input = parse_json_input(json_input)
-    json_response = apply_path(parse_json_response(context), path)
+    json_response = apply_path(parse_json_response(response), path)
     assert_equal(json_input, json_response, "JSON not matches")
 
 
-def expect_json_contains(context, json_input, path=None):
+def expect_json_contains(response, json_input, path=None):
     """
     checks if json response contains some json subset,
     path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     """
     json_input = parse_json_input(json_input)
-    json_response = apply_path(parse_json_response(context), path)
+    json_response = apply_path(parse_json_response(response), path)
 
     if isinstance(json_input, dict):
         for key in json_input.keys():
             assert_and_print_body(
-                context,
+                response,
                 assert_equal,
                 json_input[key], json_response[key],
                 "JSON not matches.")
@@ -75,18 +75,18 @@ def expect_json_contains(context, json_input, path=None):
                                   .format(type(json_input)))
 
 
-def expect_json_not_contains(context, json_input, path=None):
+def expect_json_not_contains(response, json_input, path=None):
     """
     checks if json response contains some json subset,
     path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     """
     json_input = parse_json_input(json_input)
-    json_response = apply_path(parse_json_response(context), path)
+    json_response = apply_path(parse_json_response(response), path)
 
     if isinstance(json_input, dict):
         for key in json_input.keys():
             assert_and_print_body(
-                context,
+                response,
                 assert_not_equal,
                 json_input[key], json_response[key],
                 "JSON matches.")
@@ -99,33 +99,33 @@ def expect_json_not_contains(context, json_input, path=None):
                                   .format(type(json_input)))
 
 
-def expect_header(context, header, value, partly=False):
+def expect_header(response, header, value, partly=False):
     assert_in(header,
-              context.response.headers,
+              response.headers,
               "No such header in response.")
     if partly:
         assert_in(value.lower(),
-                  context.response.headers[header].lower(),
+                  response.headers[header].lower(),
                   "Header not matches.")
     else:
         assert_in(value.lower(),
-                  context.response.headers[header].lower(),
+                  response.headers[header].lower(),
                   "Header not matches.")
 
 
-def expect_header_contains(context, header, value):
-    expect_header(context, header, value, partly=True)
+def expect_header_contains(response, header, value):
+    expect_header(response, header, value, partly=True)
 
 
-def expect_json_length(context, length, path=None):
+def expect_json_length(response, length, path=None):
     """
     checks if count of objects in json response equals provided length,
     path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     """
-    json_response = apply_path(parse_json_response(context), path)
+    json_response = apply_path(parse_json_response(response), path)
     assert_equal(
         length, len(json_response), "JSON objects count not matches.")
 
 
-def expect_body_contains(context, text):
-    assert_in(text, get_body(context), "Body not matches.")
+def expect_body_contains(response, text):
+    assert_in(text, get_body(response), "Body not matches.")

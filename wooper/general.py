@@ -10,7 +10,7 @@ def fail(msg=None):
     raise failureException(msg)
 
 
-def fail_and_print_body(context, msg):
+def fail_and_print_body(response, msg):
     fail(
         """{msg}
 Response body:
@@ -18,7 +18,7 @@ Response body:
 {body}
 \"\"\"
 """
-        .format(body=context.response.text, msg=msg))
+        .format(body=response.text, msg=msg))
 
 
 def apply_path(json_dict, path):
@@ -53,20 +53,20 @@ def parse_json_input(json_dict):
         return json_dict
 
 
-def get_body(context):
-    body = getattr(context.response, 'text', None)
+def get_body(response):
+    body = getattr(response, 'text', None)
     if not body:
         try:
-            body = context.response.data.decode("utf-8")
+            body = response.data.decode("utf-8")
         except UnicodeDecodeError:
-            body = context.response
+            body = response
         except Exception:
             fail("Response body is not text.")
     return body
 
 
-def parse_json_response(context):
+def parse_json_response(response):
     try:
-        return json.loads(get_body(context))
+        return json.loads(get_body(response))
     except ValueError:
-        fail_and_print_body(context, 'Response in not a valid JSON.')
+        fail_and_print_body(response, 'Response in not a valid JSON.')
