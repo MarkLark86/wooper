@@ -259,7 +259,6 @@ def assert_is_instance(obj, cls, msg=None):
         standardMsg = '%s is not an instance of %r' % (safe_repr(obj), cls)
         fail(_formatMessage(msg, standardMsg))
 
-
 def assert_multiline_equal(first, second, msg=None):
     """Assert that two multi-line strings are equal."""
     assert_is_instance(first, str, 'First argument is not a string')
