@@ -2,7 +2,31 @@ import json
 from pprint import pformat
 
 
-failureException = AssertionError
+class WooperAssertionError(AssertionError):
+    pass
+
+
+failureException = WooperAssertionError
+
+
+def assert_and_print_body(response, assert_function, first, second, msg):
+    body = getattr(response, 'text', None)
+    if not body:
+        try:
+            body = response.data.decode("utf-8")
+        except UnicodeDecodeError:
+            body = response.data
+        except Exception:
+            body = '%%%_not_text_%%%'
+    assert_function(
+        first, second,
+        """{message}.
+Response body:
+\"\"\"
+{body}
+\"\"\"
+"""
+        .format(body=body, message=msg))
 
 
 def fail(msg=None):

@@ -2,27 +2,8 @@ from .assertions import (
     assert_equal, assert_not_equal,
     assert_in, assert_not_in)
 from .general import (
-    parse_json_input, parse_json_response, apply_path, get_body)
-
-
-def assert_and_print_body(response, assert_function, first, second, msg):
-    body = getattr(response, 'text', None)
-    if not body:
-        try:
-            body = response.data.decode("utf-8")
-        except UnicodeDecodeError:
-            body = response.data
-        except Exception:
-            body = '%%%_not_text_%%%'
-    assert_function(
-        first, second,
-        """{message}.
-Response body:
-\"\"\"
-{body}
-\"\"\"
-"""
-        .format(body=body, message=msg))
+    parse_json_input, parse_json_response, apply_path, get_body,
+    assert_and_print_body)
 
 
 def expect_status(response, code):

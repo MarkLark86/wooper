@@ -1,10 +1,14 @@
+"""
+declassified methods from unittest.TestCase
+"""
+
+
 import difflib
 import pprint
 
-from .general import fail
+from .general import fail, failureException
 
 
-failureException = AssertionError
 _diffThreshold = 2**16
 _maxDiff = None
 DIFF_OMITTED = ('\nDiff is %s characters long. '
@@ -28,7 +32,8 @@ def _shorten(s, prefixlen, suffixlen):
 
 def commonprefix(m):
     "Given a list of pathnames, returns the longest common leading component"
-    if not m: return ''
+    if not m:
+        return ''
     s1 = min(m)
     s2 = max(m)
     for i, c in enumerate(s1):
@@ -47,16 +52,17 @@ def _common_shorten_repr(*args):
     prefixlen = len(prefix)
 
     common_len = _MAX_LENGTH - \
-                 (maxlen - prefixlen + _MIN_BEGIN_LEN + _PLACEHOLDER_LEN)
+        (maxlen - prefixlen + _MIN_BEGIN_LEN + _PLACEHOLDER_LEN)
     if common_len > _MIN_COMMON_LEN:
         assert _MIN_BEGIN_LEN + _PLACEHOLDER_LEN + _MIN_COMMON_LEN + \
-               (maxlen - prefixlen) < _MAX_LENGTH
+            (maxlen - prefixlen) < _MAX_LENGTH
         prefix = _shorten(prefix, _MIN_BEGIN_LEN, common_len)
         return tuple(prefix + s[prefixlen:] for s in args)
 
     prefix = _shorten(prefix, _MIN_BEGIN_LEN, _MIN_COMMON_LEN)
     return tuple(prefix + _shorten(s[prefixlen:], _MIN_DIFF_LEN, _MIN_END_LEN)
                  for s in args)
+
 
 def safe_repr(obj, short=False):
     try:
@@ -66,6 +72,7 @@ def safe_repr(obj, short=False):
     if not short or len(result) < _MAX_LENGTH:
         return result
     return result[:_MAX_LENGTH] + ' [truncated]...'
+
 
 def _truncateMessage(message, diff):
     max_diff = _maxDiff
@@ -160,9 +167,8 @@ def assert_sequence_equal(seq1, seq2, msg=None, seq_type=None):
         if seq1 == seq2:
             return
 
-        differing = '%ss differ: %s != %s\n'\
-                    % (
-            (seq_type_name.capitalize(),) + _common_shorten_repr(seq1, seq2))
+        differing = '%ss differ: %s != %s\n' % (
+            (seq_type_name.capitalize(), ) + _common_shorten_repr(seq1, seq2))
 
         for i in range(min(len1, len2)):
             try:
@@ -185,7 +191,7 @@ def assert_sequence_equal(seq1, seq2, msg=None, seq_type=None):
                 break
         else:
             if (len1 == len2 and seq_type is None and
-                type(seq1) != type(seq2)):
+                    type(seq1) != type(seq2)):
                 # The sequences are the same, but have differing types.
                 return
 
