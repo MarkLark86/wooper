@@ -107,7 +107,7 @@ def expect_headers_contain(response, header):
 
 def expect_headers(response, headers, partly=False):
     for header, value in headers.items():
-        expect_headers_contains(response, header)
+        expect_headers_contain(response, header)
         if partly:
             assert_in(value.lower(),
                       response.headers[header].lower(),
@@ -124,9 +124,11 @@ def expect_json_length(response, length, path=None):
     path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     """
     json_response = apply_path(parse_json_response(response), path)
-    assert_equal(
-        length, len(json_response), "JSON objects count not matches.")
+    assert_in(type(json_response), (list, dict),
+              "'{}' isn't json.".format(json_response))
+    assert_equal(length, len(json_response),
+                 "JSON objects count not matches.")
 
 
 def expect_body_contains(response, text):
-    assert_in(text, get_body(response), "Body not matches.")
+    assert_in(text, get_body(response), "Body not contains '{}'.".format(text))
