@@ -1,4 +1,4 @@
-from requests.models import Response
+class ResponseMock:
+    pass
 
-
-response = Response()
+response = ResponseMock()
