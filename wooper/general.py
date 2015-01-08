@@ -57,8 +57,8 @@ def apply_path(json_dict, path):
             json_dict = json_dict[element]
         except (IndexError, TypeError, KeyError):
             fail(
-                """Path can't be applied:
-no such index '{index}' in \"\"\"{dict}\"\"\"."""
+                "Path can't be applied:"
+                "no such index '{index}' in " '"""{dict}""".'
                 .format(index=element, dict=pformat(json_dict)))
     return json_dict
 
