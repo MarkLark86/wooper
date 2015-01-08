@@ -175,19 +175,19 @@ def assert_sequence_equal(seq1, seq2, msg=None, seq_type=None):
                 item1 = seq1[i]
             except (TypeError, IndexError, NotImplementedError):
                 differing += ('\nUnable to index element %d of first %s\n' %
-                             (i, seq_type_name))
+                              (i, seq_type_name))
                 break
 
             try:
                 item2 = seq2[i]
             except (TypeError, IndexError, NotImplementedError):
                 differing += ('\nUnable to index element %d of second %s\n' %
-                             (i, seq_type_name))
+                              (i, seq_type_name))
                 break
 
             if item1 != item2:
                 differing += ('\nFirst differing element %d:\n%s\n%s\n' %
-                             (i, item1, item2))
+                              (i, item1, item2))
                 break
         else:
             if (len1 == len2 and seq_type is None and
@@ -197,7 +197,7 @@ def assert_sequence_equal(seq1, seq2, msg=None, seq_type=None):
 
         if len1 > len2:
             differing += ('\nFirst %s contains %d additional '
-                         'elements.\n' % (seq_type_name, len1 - len2))
+                          'elements.\n' % (seq_type_name, len1 - len2))
             try:
                 differing += ('First extra element %d:\n%s\n' %
                               (len2, seq1[len2]))
@@ -206,7 +206,7 @@ def assert_sequence_equal(seq1, seq2, msg=None, seq_type=None):
                               'of first %s\n' % (len2, seq_type_name))
         elif len1 < len2:
             differing += ('\nSecond %s contains %d additional '
-                         'elements.\n' % (seq_type_name, len2 - len1))
+                          'elements.\n' % (seq_type_name, len2 - len1))
             try:
                 differing += ('First extra element %d:\n%s\n' %
                               (len1, seq2[len1]))
@@ -265,6 +265,7 @@ def assert_is_instance(obj, cls, msg=None):
         standardMsg = '%s is not an instance of %r' % (safe_repr(obj), cls)
         fail(_formatMessage(msg, standardMsg))
 
+
 def assert_multiline_equal(first, second, msg=None):
     """Assert that two multi-line strings are equal."""
     assert_is_instance(first, str, 'First argument is not a string')
@@ -272,8 +273,7 @@ def assert_multiline_equal(first, second, msg=None):
 
     if first != second:
         # don't use difflib if the strings are too long
-        if (len(first) > _diffThreshold or
-            len(second) > _diffThreshold):
+        if (len(first) > _diffThreshold or len(second) > _diffThreshold):
             _baseAssertEqual(first, second, msg)
         firstlines = first.splitlines(keepends=True)
         secondlines = second.splitlines(keepends=True)
