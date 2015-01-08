@@ -49,7 +49,7 @@ def expect_json_contains(response, json_input, path=None,
     json_input = parse_json_input(json_input)
     json_response = apply_path(parse_json_response(response), path)
 
-    if isinstance(json_input, dict):
+    if isinstance(json_input, dict) and isinstance(json_response, dict):
         for key in json_input.keys():
             assert_and_print_body(
                 response,
