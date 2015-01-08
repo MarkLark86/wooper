@@ -1,4 +1,5 @@
 from unittest import TestCase
+from requests.structures import CaseInsensitiveDict
 from wooper import expect
 from wooper.general import WooperAssertionError
 from .common import response
@@ -236,4 +237,56 @@ class ExpectJsonNotContainsTestCase(TestCase):
                     "list":
                     [{"baz": "spam", "second": "item"}, 1, "qwe", ["a", "b"]]
                 }
+            )
+
+
+class ExpectHeadersTestCase(TestCase):
+
+    def setUp(self):
+        response.headers = CaseInsensitiveDict({
+            "content-type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        })
+
+    def test_contains_pass(self):
+        expect.expect_headers_contain(
+            response,
+            "access-control-allow-origin"
+        )
+
+    def test_contains_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_headers_contain(
+                response,
+                "Authorization"
+            )
+
+    def test_pass(self):
+        expect.expect_headers(
+            response,
+            {"Content-Type": "application/json",
+             "access-control-allow-origin": "*"}
+        )
+
+    def test_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_headers(
+                response,
+                {"Content-Type": "text/html",
+                 "access-control-allow-origin": "*"}
+            )
+
+    def test_partly_pass(self):
+        expect.expect_headers(
+            response,
+            {"Content-Type": "json"},
+            partly=True
+        )
+
+    def test_partly_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_headers(
+                response,
+                {"Content-Type": "html"},
+                partly=True
             )
