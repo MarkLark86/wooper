@@ -239,6 +239,21 @@ class ExpectJsonNotContainsTestCase(TestCase):
                 }
             )
 
+    def test_object_in_array_pass(self):
+        expect.expect_json_not_contains(
+            response,
+            {"baz": "spa", "second": "item"},
+            path="list"
+        )
+
+    def test_object_in_array_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_json_not_contains(
+                response,
+                {"baz": "spam", "second": "item"},
+                path="list"
+            )
+
 
 class ExpectHeadersTestCase(TestCase):
 
