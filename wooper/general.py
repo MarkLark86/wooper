@@ -35,12 +35,11 @@ def fail(msg=None):
 
 def fail_and_print_body(response, msg):
     fail(
-        """{msg}
-Response body:
-\"\"\"
-{body}
-\"\"\"
-"""
+        "{msg}"
+        "Response body:"
+        '"""'
+        "{body}"
+        '"""'
         .format(body=response.text, msg=msg))
 
 
