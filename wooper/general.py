@@ -20,12 +20,11 @@ def assert_and_print_body(response, assert_function, first, second, msg):
             body = '%%%_not_text_%%%'
     assert_function(
         first, second,
-        """{message}.
-Response body:
-\"\"\"
-{body}
-\"\"\"
-"""
+        "{message}."
+        "Response body:"
+        '"""'
+        "{body}"
+        '"""'
         .format(body=body, message=msg))
 
 
