@@ -109,21 +109,6 @@ def _baseAssertEqual(first, second, msg=None):
         fail(msg)
 
 
-def _getAssertEqualityFunc(first, second):
-    """Get a detailed comparison function for the types of the two args.
-
-    Returns: A callable accepting (first, second, msg=None) that will
-    raise a failure exception if first != second with a useful human
-    readable error message for those types.
-    """
-    if type(first) is type(second):
-        asserter = _type_equality_funcs.get(type(first))
-        if asserter is not None:
-            return asserter
-
-    return _baseAssertEqual
-
-
 def assert_sequence_equal(seq1, seq2, msg=None, seq_type=None):
     """An equality assertion for ordered sequences (like lists and tuples).
 
@@ -309,8 +294,21 @@ _type_equality_funcs = {
     dict: assert_dict_equal,
     tuple: assert_tuple_equal,
 }
-# (set, 'assertSetEqual')
-# (frozenset, 'assertSetEqual')
+
+
+def _getAssertEqualityFunc(first, second):
+    """Get a detailed comparison function for the types of the two args.
+
+    Returns: A callable accepting (first, second, msg=None) that will
+    raise a failure exception if first != second with a useful human
+    readable error message for those types.
+    """
+    if type(first) is type(second):
+        asserter = _type_equality_funcs.get(type(first))
+        if asserter is not None:
+            return asserter
+
+    return _baseAssertEqual
 
 
 def assert_equal(first, second, msg=None):
