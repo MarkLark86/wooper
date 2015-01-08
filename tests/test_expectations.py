@@ -290,3 +290,47 @@ class ExpectHeadersTestCase(TestCase):
                 {"Content-Type": "html"},
                 partly=True
             )
+
+
+class ExpectJsonLenthTestCase(TestCase):
+
+    def setUp(self):
+        response.text = """{
+            "foo": "bar",
+            "list": [ {"baz": "spam"}, "1", "qwe" ]
+        }"""
+
+    def test_pass(self):
+        expect.expect_json_length(response, 2)
+
+    def test_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_json_length(response, 3)
+
+    def test_path_pass(self):
+        expect.expect_json(
+            response,
+            "spam",
+            path="list/[0]/baz"
+        )
+
+    def test_path_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_json(
+                response,
+                "spa",
+                path="list/[0]/baz"
+            )
+
+
+class ExpectBodyContainsTestCase(TestCase):
+
+    def setUp(self):
+        response.text = """404 Not Found"""
+
+    def test_pass(self):
+        expect.expect_body_contains(response, "Not Found")
+
+    def test_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_body_contains(response, "trace")
