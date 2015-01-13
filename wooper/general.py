@@ -6,9 +6,6 @@ class WooperAssertionError(AssertionError):
     pass
 
 
-failureException = WooperAssertionError
-
-
 def _format_message_text_and_body(response, message):
     body = getattr(response, 'text', None)
     if not body:
@@ -35,7 +32,7 @@ def assert_and_print_body(response, assert_function, first, second, message):
 
 def fail(msg=None):
     """Fail immediately, with the given message."""
-    raise failureException(msg)
+    raise WooperAssertionError(msg)
 
 
 def fail_and_print_body(response, message):
