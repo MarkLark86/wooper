@@ -2,23 +2,41 @@ import json
 from pprint import pformat
 
 
-failureException = AssertionError
+class WooperAssertionError(AssertionError):
+    pass
+
+
+def _format_message_text_and_body(response, message):
+    body = getattr(response, 'text', None)
+    if not body:
+        try:
+            body = response.data.decode("utf-8")
+        except UnicodeDecodeError:
+            body = response.data
+        except Exception:
+            body = '%%%_not_text_%%%'
+    return (
+        "{message}"
+        "Response body:"
+        '"""'
+        "{body}"
+        '"""'
+        .format(message=message, body=body))
+
+
+def assert_and_print_body(response, assert_function, first, second, message):
+    return assert_function(
+        first, second, _format_message_text_and_body(response, message)
+    )
 
 
 def fail(msg=None):
     """Fail immediately, with the given message."""
-    raise failureException(msg)
+    raise WooperAssertionError(msg)
 
 
-def fail_and_print_body(response, msg):
-    fail(
-        """{msg}
-Response body:
-\"\"\"
-{body}
-\"\"\"
-"""
-        .format(body=response.text, msg=msg))
+def fail_and_print_body(response, message):
+    fail(_format_message_text_and_body(response, message))
 
 
 def apply_path(json_dict, path):
@@ -36,8 +54,8 @@ def apply_path(json_dict, path):
             json_dict = json_dict[element]
         except (IndexError, TypeError, KeyError):
             fail(
-                """Path can't be applied:
-no such index '{index}' in \"\"\"{dict}\"\"\"."""
+                "Path can't be applied:"
+                "no such index '{index}' in " '"""{dict}""".'
                 .format(index=element, dict=pformat(json_dict)))
     return json_dict
 
