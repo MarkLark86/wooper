@@ -2,7 +2,8 @@
 .. module:: expect
    :synopsis: Expectations
 
-Expectation helper functions are receiving response object as first argument.
+Expectation helper functions are receiving response object
+(for example from `requests <http://docs.python-requests.org/>`_ lib) as first argument.
 These helpers make testing API response bodies and headers easy with minimal
 time and effort.
 
