@@ -6,11 +6,11 @@ LONG_DESCRIPTION = open('README.md').read()
 
 setup(
     name='wooper',
-    version="0.2.0",
+    version="0.3.0",
     description="FrisbyJS-inspired REST API testing helpers and steps \
 for 'behave' behavior-driven development testing library",
     long_description=LONG_DESCRIPTION,
-    author='Evžen Kiřilov',
+    author='Yauhen Kirylau',
     author_email='actionless.loveless@gmail.com',
     url='http://github.com/actionless/wooper',
     license=open('LICENSE').read(),
