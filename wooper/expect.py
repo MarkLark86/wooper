@@ -20,6 +20,12 @@ from .general import (
 
 
 def expect_status(response, code):
+    """
+    checks if response status equals given code
+
+    :param int code: Expected status code
+
+    """
     assert_and_print_body(
         response,
         assert_equal,
@@ -28,6 +34,12 @@ def expect_status(response, code):
 
 
 def expect_status_in(response, codes):
+    """
+    checks if response status equals to one of the provided
+
+    :param list codes: List of valid status codes
+
+    """
     assert_and_print_body(
         response,
         assert_in,
@@ -38,7 +50,14 @@ def expect_status_in(response, codes):
 def expect_json(response, json_input, path=None):
     """
     checks if json response equals some json,
-    path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+
+    :param json_input: JSON object to compare with
+    :type json_input: str, list, dict
+
+    :param path: Path inside response json,
+        separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    :type path: str, optional
+
     """
     json_input = parse_json_input(json_input)
     json_response = apply_path(parse_json_response(response), path)
@@ -49,7 +68,14 @@ def expect_json_contains(response, json_input, path=None,
                          reverse_expectation=False):
     """
     checks if json response contains some json subset,
-    path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+
+    :param json_input: JSON object to compare with
+    :type json_input: str, list, dict
+
+    :param path: Path inside response json,
+        separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    :type path: str, optional
+
     """
     assert_item = assert_equal
     assert_sequence = assert_in
@@ -76,19 +102,50 @@ def expect_json_contains(response, json_input, path=None,
 def expect_json_not_contains(response, json_input, path=None):
     """
     checks if json response not contains some json subset,
-    path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+
+    :param json_input: JSON object to compare with
+    :type json_input: str, list, dict
+
+    :param path: Path inside response json,
+        separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    :type path: str, optional
+
     """
     return expect_json_contains(response, json_input, path,
                                 reverse_expectation=True)
 
 
-def expect_headers_contain(response, header):
+def expect_headers_contain(response, header, value=None):
+    """
+    checks if response headers contain a given header
+
+    :param str header: Expected header name.
+
+    :param value: Expected header value.
+    :type value: str, optional
+
+    """
     assert_in(header,
               response.headers,
               "No such header in response.")
+    if value:
+        assert_equal(value,
+                     response.headers[header],
+                     "Header value not matches.")
 
 
 def expect_headers(response, headers, partly=False):
+    """
+    checks if response headers values are equal to given
+
+    :param dict headers: Dict with headers and their values,
+        like { "Header1": "ExpectedValue1" }
+
+    :param partly: Compare full header value or
+        check if the value includes expected one.
+    :type partly: bool, optional
+
+    """
     for header, value in headers.items():
         expect_headers_contain(response, header)
         if partly:
@@ -104,7 +161,14 @@ def expect_headers(response, headers, partly=False):
 def expect_json_length(response, length, path=None):
     """
     checks if count of objects in json response equals provided length,
-    path separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+
+    :param int length: Expected number of objects inside json
+        or length of the string
+
+    :param path: Path inside response json,
+        separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    :type path: str, optional
+
     """
     json_response = apply_path(parse_json_response(response), path)
     assert_in(type(json_response), (list, dict),
@@ -114,4 +178,9 @@ def expect_json_length(response, length, path=None):
 
 
 def expect_body_contains(response, text):
+    """
+    checks if response body contains some text
+
+    :param str text: Expected text
+    """
     assert_in(text, get_body(response), "Body not contains '{}'.".format(text))
