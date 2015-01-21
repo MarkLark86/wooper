@@ -1,8 +1,9 @@
 *.pyc
 __pycache__/
 env/
-build/
+build
 dist/
 *.egg-info/
 .coverage
 htmlcov/
+coverage/

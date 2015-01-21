@@ -276,6 +276,19 @@ class ExpectHeadersTestCase(TestCase):
                 "Authorization"
             )
 
+    def test_contains_value_pass(self):
+        expect.expect_headers_contain(
+            response,
+            "access-control-allow-origin", "*"
+        )
+
+    def test_contains__value_fail(self):
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_headers_contain(
+                response,
+                "content-type", "text/html"
+            )
+
     def test_pass(self):
         expect.expect_headers(
             response,
