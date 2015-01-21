@@ -1,3 +1,16 @@
+"""
+.. module:: expect
+   :synopsis: Expectations
+
+Expectation helper functions are receiving response object as first argument.
+These helpers make testing API response bodies and headers easy with minimal
+time and effort.
+
+.. moduleauthor:: Yauhen Kirylau <actionless.loveless@gmail.com>
+
+"""
+
+
 from .assertions import (
     assert_equal, assert_not_equal,
     assert_in, assert_not_in)
