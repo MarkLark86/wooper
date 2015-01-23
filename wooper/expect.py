@@ -2,7 +2,9 @@
 .. module:: expect
    :synopsis: Expectations
 
-Expectation helper functions are receiving response object as first argument.
+Expectation helper functions are receiving response object
+(for example from `requests <http://docs.python-requests.org/>`_ lib)
+as first argument.
 These helpers make testing API response bodies and headers easy with minimal
 time and effort.
 
@@ -16,7 +18,7 @@ from .assertions import (
     assert_in, assert_not_in)
 from .general import (
     parse_json_input, parse_json_response, apply_path, get_body,
-    assert_and_print_body)
+    assert_and_print_body, WooperAssertionError, fail_and_print_body)
 
 
 def expect_status(response, code):
@@ -47,36 +49,77 @@ def expect_status_in(response, codes):
         "Status code not matches.")
 
 
-def expect_json(response, json_input, path=None):
+def expect_json(response, expected_json, path=None):
     """
     checks if json response equals some json,
 
-    :param json_input: JSON object to compare with
-    :type json_input: str, list, dict
+    :param expected_json: JSON object to compare with
+    :type expected_json: str, list, dict
 
     :param path: Path inside response json,
         separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     :type path: str, optional
 
     """
-    json_input = parse_json_input(json_input)
+    expected_json = parse_json_input(expected_json)
     json_response = apply_path(parse_json_response(response), path)
-    assert_equal(json_input, json_response, "JSON not matches")
+    assert_equal(expected_json, json_response, "JSON not matches")
 
 
-def expect_json_contains(response, json_input, path=None,
+def expect_json_match(response, expected_json, path=None):
+    """
+    checks if json response partly matches some json,
+
+    :param expected_json: JSON object to compare with
+    :type expected_json: str, list, dict
+
+    :param path: Path inside response json,
+        separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    :type path: str, optional
+
+    """
+    def _json_match(response_data, expected_data, message):
+        if isinstance(response_data, dict):
+            for key in expected_data:
+                assert_in(key, response_data)
+                _json_match(response_data[key], expected_data[key], message)
+        elif isinstance(response_data, list):
+            for expected_item in expected_data:
+                found = False
+                for response_item in response_data:
+                    try:
+                        _json_match(response_item, expected_item, message)
+                    except WooperAssertionError:
+                        pass
+                    else:
+                        found = True
+                        break
+                assert_equal(found, True)
+        else:
+            assert_equal(expected_data, response_data)
+
+    expected_json = parse_json_input(expected_json)
+    json_response = apply_path(parse_json_response(response), path)
+    try:
+        _json_match(json_response, expected_json, "")
+    except WooperAssertionError:
+        fail_and_print_body(response, "JSON not matches")
+
+
+def expect_json_contains(response, expected_json, path=None,
                          reverse_expectation=False):
     """
     checks if json response contains some json subset,
 
-    :param json_input: JSON object to compare with
-    :type json_input: str, list, dict
+    :param expected_json: JSON object to compare with
+    :type expected_json: str, list, dict
 
     :param path: Path inside response json,
         separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     :type path: str, optional
 
     """
+
     assert_item = assert_equal
     assert_sequence = assert_in
     message = "JSON response does not contain such value"
@@ -85,33 +128,37 @@ def expect_json_contains(response, json_input, path=None,
         assert_sequence = assert_not_in
         message = "JSON response contains such value"
 
-    json_input = parse_json_input(json_input)
+    expected_json = parse_json_input(expected_json)
     json_response = apply_path(parse_json_response(response), path)
 
-    if isinstance(json_input, dict) and isinstance(json_response, dict):
-        for key in json_input.keys():
+    if isinstance(expected_json, dict) and isinstance(json_response, dict):
+        for key in expected_json.keys():
             assert_and_print_body(
                 response,
                 assert_item,
-                json_input[key], json_response[key],
+                expected_json[key], json_response[key],
                 message)
     else:
-        assert_sequence(json_input, json_response, message)
+        assert_and_print_body(
+            response,
+            assert_sequence,
+            expected_json, json_response,
+            message)
 
 
-def expect_json_not_contains(response, json_input, path=None):
+def expect_json_not_contains(response, expected_json, path=None):
     """
     checks if json response not contains some json subset,
 
-    :param json_input: JSON object to compare with
-    :type json_input: str, list, dict
+    :param expected_json: JSON object to compare with
+    :type expected_json: str, list, dict
 
     :param path: Path inside response json,
         separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
     :type path: str, optional
 
     """
-    return expect_json_contains(response, json_input, path,
+    return expect_json_contains(response, expected_json, path,
                                 reverse_expectation=True)
 
 
