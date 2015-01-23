@@ -80,11 +80,18 @@ def expect_json_match(response, json_input, path=None):
     def _json_match(response_data, expected_data, message):
         if isinstance(response_data, dict) or isinstance(response_data, list):
             for key in expected_data:
-                assert_in(key, response_data, message)
+                assert_and_print_body(
+                    response,
+                    assert_in, key, response_data,
+                    message)
                 if isinstance(response_data, dict):
-                    _json_match(response_data[key], expected_data[key], message)
+                    _json_match(response_data[key], expected_data[key],
+                                message)
         else:
-            assert_equal(expected_data, response_data, message)
+            assert_and_print_body(
+                response,
+                assert_equal, expected_data, response_data,
+                message)
 
     json_input = parse_json_input(json_input)
     json_response = apply_path(parse_json_response(response), path)
