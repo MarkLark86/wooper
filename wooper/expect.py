@@ -3,7 +3,8 @@
    :synopsis: Expectations
 
 Expectation helper functions are receiving response object
-(for example from `requests <http://docs.python-requests.org/>`_ lib) as first argument.
+(for example from `requests <http://docs.python-requests.org/>`_ lib)
+as first argument.
 These helpers make testing API response bodies and headers easy with minimal
 time and effort.
 
@@ -17,7 +18,7 @@ from .assertions import (
     assert_in, assert_not_in)
 from .general import (
     parse_json_input, parse_json_response, apply_path, get_body,
-    assert_and_print_body)
+    assert_and_print_body, WooperAssertionError, fail_and_print_body)
 
 
 def expect_status(response, code):
@@ -78,24 +79,31 @@ def expect_json_match(response, json_input, path=None):
 
     """
     def _json_match(response_data, expected_data, message):
-        if isinstance(response_data, dict) or isinstance(response_data, list):
+        if isinstance(response_data, dict):
             for key in expected_data:
-                assert_and_print_body(
-                    response,
-                    assert_in, key, response_data,
-                    message)
-                if isinstance(response_data, dict):
-                    _json_match(response_data[key], expected_data[key],
-                                message)
+                assert_in(key, response_data)
+                _json_match(response_data[key], expected_data[key], message)
+        elif isinstance(response_data, list):
+            for expected_item in expected_data:
+                found = False
+                for response_item in response_data:
+                    try:
+                        _json_match(response_item, expected_item, message)
+                    except WooperAssertionError:
+                        pass
+                    else:
+                        found = True
+                        break
+                assert_equal(found, True)
         else:
-            assert_and_print_body(
-                response,
-                assert_equal, expected_data, response_data,
-                message)
+            assert_equal(expected_data, response_data)
 
     json_input = parse_json_input(json_input)
     json_response = apply_path(parse_json_response(response), path)
-    _json_match(json_response, json_input, "JSON not matches")
+    try:
+        _json_match(json_response, json_input, "")
+    except WooperAssertionError:
+        fail_and_print_body(response, "JSON not matches")
 
 
 def expect_json_contains(response, json_input, path=None,

@@ -90,6 +90,21 @@ class ExpectJsonMatchTestCase(TestCase):
             "test5": "value5"
         }
         """
+        self.list_response_text = """
+        [
+            {"query1": {
+                "and": [{
+                    "test1": "value1"
+                }, {
+                    "test3": "value3"
+                }],
+                "test2": "value2",
+                "test4": "value4"
+            }},
+            {"query10": "value10"},
+            {"test5": "value5"}
+        ]
+        """
 
     def test_pass(self):
         expect.expect_json_match(
@@ -118,6 +133,37 @@ class ExpectJsonMatchTestCase(TestCase):
                     },
                     "query10": "value10"
                 }
+            )
+
+    def test_list_pass(self):
+        response.text = self.list_response_text
+        expect.expect_json_match(
+            response,
+            [
+                {"query1": {
+                    "and": [{
+                        "test1": "value1"
+                    }],
+                    "test2": "value2"
+                }},
+                {"query10": "value10"}
+            ]
+        )
+
+    def test_list_fail(self):
+        response.text = self.list_response_text
+        with self.assertRaises(WooperAssertionError):
+            expect.expect_json_match(
+                response,
+                [
+                    {"query1": {
+                        "and": [{
+                            "test1": "wrongvalue1"
+                        }],
+                        "test2": "value2"
+                    }},
+                    {"query10": "value10"}
+                ]
             )
 
 
@@ -165,7 +211,6 @@ class ExpectJsonContainsTestCase(TestCase):
                     ]
                 }"""
             )
-
 
     def test_object_in_object_pass(self):
         expect.expect_json_contains(
