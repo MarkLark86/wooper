@@ -170,6 +170,25 @@ separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</
 </dd></dl>
 
 <dl class="function">
+<dt id="wooper.expect.expect_json_match">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json_match</tt><big>(</big><em>response</em>, <em>json_input</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if json response partly matches some json,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>json_input</strong> (<em>str, list, dict</em>) &#8211; JSON object to compare with</li>
+<li><strong>path</strong> (<em>str, optional</em>) &#8211; Path inside response json,
+separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="wooper.expect.expect_json_not_contains">
 <tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json_not_contains</tt><big>(</big><em>response</em>, <em>json_input</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json_not_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json_not_contains" title="Permalink to this definition">¶</a></dt>
 <dd><p>checks if json response not contains some json subset,</p>
