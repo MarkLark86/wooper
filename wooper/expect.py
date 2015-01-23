@@ -65,6 +65,32 @@ def expect_json(response, json_input, path=None):
     assert_equal(json_input, json_response, "JSON not matches")
 
 
+def expect_json_match(response, json_input, path=None):
+    """
+    checks if json response partly matches some json,
+
+    :param json_input: JSON object to compare with
+    :type json_input: str, list, dict
+
+    :param path: Path inside response json,
+        separated by slashes, ie 'foo/bar/spam', 'foo/[0]/bar'
+    :type path: str, optional
+
+    """
+    def _json_match(response_data, expected_data, message):
+        if isinstance(response_data, dict) or isinstance(response_data, list):
+            for key in expected_data:
+                assert_in(key, response_data, message)
+                if isinstance(response_data, dict):
+                    _json_match(response_data[key], expected_data[key], message)
+        else:
+            assert_equal(expected_data, response_data, message)
+
+    json_input = parse_json_input(json_input)
+    json_response = apply_path(parse_json_response(response), path)
+    _json_match(json_response, json_input, "JSON not matches")
+
+
 def expect_json_contains(response, json_input, path=None,
                          reverse_expectation=False):
     """
@@ -78,6 +104,7 @@ def expect_json_contains(response, json_input, path=None,
     :type path: str, optional
 
     """
+
     assert_item = assert_equal
     assert_sequence = assert_in
     message = "JSON response does not contain such value"
@@ -97,7 +124,11 @@ def expect_json_contains(response, json_input, path=None,
                 json_input[key], json_response[key],
                 message)
     else:
-        assert_sequence(json_input, json_response, message)
+        assert_and_print_body(
+            response,
+            assert_sequence,
+            json_input, json_response,
+            message)
 
 
 def expect_json_not_contains(response, json_input, path=None):
