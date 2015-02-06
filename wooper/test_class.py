@@ -1,3 +1,11 @@
+"""
+.. module:: test_class
+   :synopsis: Testclass and mixing for using together with unittest
+
+.. moduleauthor:: Yauhen Kirylau <actionless.loveless@gmail.com>
+
+"""
+
 import json
 from requests import Session
 from pprint import pprint
@@ -12,8 +20,15 @@ from .expect import (
 
 
 class ApiMixin:
+    """
+    This class can be used as a mixin to `unittest.TestCase
+    <https://docs.python.org/3.4/library/unittest.html#unittest.TestCase>`_
+    to provide additional methods for requesting, inspecting and testing
+    REST API services.
+    """
 
     server_url = None
+    """ Server URL """
 
     maxDiff = None
     print_url = False
