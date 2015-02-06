@@ -6,7 +6,7 @@ LONG_DESCRIPTION = open('README.md').read()
 
 setup(
     name='wooper',
-    version="0.3.0",
+    version="0.4.0",
     description="FrisbyJS-inspired REST API testing helpers and steps \
 for 'behave' behavior-driven development testing library",
     long_description=LONG_DESCRIPTION,
