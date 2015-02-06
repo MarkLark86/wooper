@@ -9,14 +9,8 @@ Welcome to wooper's documentation!
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: wooper
-
-
-Expectations
-=========================
-
-.. automodule:: wooper.expect
-   :members:
+   expect.rst
+   test_class.rst
 
 Indices and tables
 ==================
