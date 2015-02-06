@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Expectations &mdash; wooper 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="wooper 0.3.0 documentation" href="index.html" />
+    <link rel="next" title="Test class for UnitTest" href="test_class.html" />
+    <link rel="prev" title="Welcome to wooper’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test_class.html" title="Test class for UnitTest"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to wooper’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">wooper 0.3.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-wooper.expect">
+<span id="expectations"></span><h1>Expectations<a class="headerlink" href="#module-wooper.expect" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-expect"></span><p>Expectation helper functions are receiving response object
+(for example from <a class="reference external" href="http://docs.python-requests.org/">requests</a> lib)
+as first argument.
+These helpers make testing API response bodies and headers easy with minimal
+time and effort.</p>
+<dl class="function">
+<dt id="wooper.expect.expect_body_contains">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_body_contains</tt><big>(</big><em>response</em>, <em>text</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_body_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_body_contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if response body contains some text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>str</em>) &#8211; Expected text</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_headers">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_headers</tt><big>(</big><em>response</em>, <em>headers</em>, <em>partly=False</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if response headers values are equal to given</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>headers</strong> (<em>dict</em>) &#8211; Dict with headers and their values,
+like { &#8220;Header1&#8221;: &#8220;ExpectedValue1&#8221; }</li>
+<li><strong>partly</strong> (<em>bool, optional</em>) &#8211; Compare full header value or
+check if the value includes expected one.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_headers_contain">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_headers_contain</tt><big>(</big><em>response</em>, <em>header</em>, <em>value=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_headers_contain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_headers_contain" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if response headers contain a given header</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>header</strong> (<em>str</em>) &#8211; Expected header name.</li>
+<li><strong>value</strong> (<em>str, optional</em>) &#8211; Expected header value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_json">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json</tt><big>(</big><em>response</em>, <em>expected_json</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if json response equals some json,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>expected_json</strong> (<em>str, list, dict</em>) &#8211; JSON object to compare with</li>
+<li><strong>path</strong> (<em>str, optional</em>) &#8211; Path inside response json,
+separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_json_contains">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json_contains</tt><big>(</big><em>response</em>, <em>expected_json</em>, <em>path=None</em>, <em>reverse_expectation=False</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json_contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if json response contains some json subset,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>expected_json</strong> (<em>str, list, dict</em>) &#8211; JSON object to compare with</li>
+<li><strong>path</strong> (<em>str, optional</em>) &#8211; Path inside response json,
+separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_json_length">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json_length</tt><big>(</big><em>response</em>, <em>length</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if count of objects in json response equals provided length,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>length</strong> (<em>int</em>) &#8211; Expected number of objects inside json
+or length of the string</li>
+<li><strong>path</strong> (<em>str, optional</em>) &#8211; Path inside response json,
+separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_json_match">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json_match</tt><big>(</big><em>response</em>, <em>expected_json</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if json response partly matches some json,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>expected_json</strong> (<em>str, list, dict</em>) &#8211; JSON object to compare with</li>
+<li><strong>path</strong> (<em>str, optional</em>) &#8211; Path inside response json,
+separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_json_not_contains">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_json_not_contains</tt><big>(</big><em>response</em>, <em>expected_json</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_json_not_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_json_not_contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if json response not contains some json subset,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>expected_json</strong> (<em>str, list, dict</em>) &#8211; JSON object to compare with</li>
+<li><strong>path</strong> (<em>str, optional</em>) &#8211; Path inside response json,
+separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_status">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_status</tt><big>(</big><em>response</em>, <em>code</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if response status equals given code</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>code</strong> (<em>int</em>) &#8211; Expected status code</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wooper.expect.expect_status_in">
+<tt class="descclassname">wooper.expect.</tt><tt class="descname">expect_status_in</tt><big>(</big><em>response</em>, <em>codes</em><big>)</big><a class="reference internal" href="_modules/wooper/expect.html#expect_status_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.expect.expect_status_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if response status equals to one of the provided</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>codes</strong> (<em>list</em>) &#8211; List of valid status codes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wooper.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Expectations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_class.html">Test class for UnitTest</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to wooper&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="test_class.html"
+                        title="next chapter">Test class for UnitTest</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/expect.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test_class.html" title="Test class for UnitTest"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to wooper’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">wooper 0.3.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, actionless.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
