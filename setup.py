@@ -6,7 +6,7 @@ LONG_DESCRIPTION = open('README.md').read()
 
 setup(
     name='wooper',
-    version="0.4.1",
+    version="0.4.2",
     description="FrisbyJS-inspired REST API testing helpers and steps \
 for 'behave' behavior-driven development testing library",
     long_description=LONG_DESCRIPTION,
@@ -20,9 +20,6 @@ for 'behave' behavior-driven development testing library",
     install_requires=[
         'requests==2.3.0',
         'behave==1.2.5'
-    ],
-    dependency_links=[
-        "https://github.com/actionless/behave/zipball/master#egg=behave-1.2.5a1",
     ],
     classifiers=[
         # @TODO: change status
