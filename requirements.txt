@@ -1,2 +1,2 @@
--e git+git://github.com/actionless/behave@master#egg=behave-1.2.5a1
+behave==1.2.5
 requests==2.3.0
