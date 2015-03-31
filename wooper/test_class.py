@@ -84,9 +84,9 @@ class ApiMixin:
         """
         make a GET request to some URI
 
-        *args, **kwargs:
-            uri: URI
-            rest of args is the same as in requests.get() as well
+        :param str uri: URI
+
+        rest of args is the same as in requests.get()
         """
         self.request('GET', *args, **kwargs)
 
@@ -94,10 +94,11 @@ class ApiMixin:
         """
         make a POST request to some URI
 
-        *args, **kwargs:
-            uri: URI
-            data: request payload
-            rest of args is the same as in requests.get() as well
+        :param str uri: URI
+        :param data: request payload
+        :type data: str, list, dict
+
+        rest of args is the same as in requests.post()
         """
         self.request_with_data('POST', *args, **kwargs)
 
@@ -105,10 +106,11 @@ class ApiMixin:
         """
         make a PATCH request to some URI
 
-        *args, **kwargs:
-            uri: URI
-            data: request payload
-            rest of args is the same as in requests.get() as well
+        :param str uri: URI
+        :param data: request payload
+        :type data: str, list, dict
+
+        rest of args is the same as in requests.patch()
         """
         self.request_with_data('PATCH', *args, **kwargs)
 
@@ -116,10 +118,11 @@ class ApiMixin:
         """
         make a PUT request to some URI
 
-        *args, **kwargs:
-            uri: URI
-            data: request payload
-            rest of args is the same as in requests.get() as well
+        :param str uri: URI
+        :param data: request payload
+        :type data: str, list, dict
+
+        rest of args is the same as in requests.put()
         """
         self.request_with_data('PUT', *args, **kwargs)
 
@@ -127,9 +130,9 @@ class ApiMixin:
         """
         make a DELETE request to some URI
 
-        *args, **kwargs:
-            uri: URI
-            rest of args is the same as in requests.get() as well
+        :param str uri: URI
+
+        rest of args is the same as in requests.delete()
         """
         self.request('DELETE', *args, **kwargs)
 
