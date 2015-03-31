@@ -135,8 +135,15 @@ def expect_json_contains(response, expected_json, path=None,
         for key in expected_json.keys():
             assert_and_print_body(
                 response,
+                assert_sequence,
+                key,
+                json_response,
+                message)
+            assert_and_print_body(
+                response,
                 assert_item,
-                expected_json[key], json_response[key],
+                expected_json[key],
+                json_response[key],
                 message)
     else:
         assert_and_print_body(
