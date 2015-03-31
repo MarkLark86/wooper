@@ -135,12 +135,13 @@ def expect_json_contains(response, expected_json, path=None,
 
     if isinstance(expected_json, dict) and isinstance(json_response, dict):
         for key in expected_json.keys():
-            assert_and_print_body(
-                response,
-                assert_sequence,
-                key,
-                json_response,
-                key_message)
+            if not reverse_expectation:
+                assert_and_print_body(
+                    response,
+                    assert_sequence,
+                    key,
+                    json_response,
+                    key_message)
             assert_and_print_body(
                 response,
                 assert_item,
