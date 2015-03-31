@@ -122,11 +122,13 @@ def expect_json_contains(response, expected_json, path=None,
 
     assert_item = assert_equal
     assert_sequence = assert_in
-    message = "JSON response does not contain such value"
+    key_message = "JSON response does not contain such key"
+    value_message = "JSON response does not contain such value"
     if reverse_expectation:
         assert_item = assert_not_equal
         assert_sequence = assert_not_in
-        message = "JSON response contains such value"
+        key_message = "JSON response contains such key"
+        value_message = "JSON response contains such value"
 
     expected_json = parse_json_input(expected_json)
     json_response = apply_path(parse_json_response(response), path)
@@ -138,19 +140,19 @@ def expect_json_contains(response, expected_json, path=None,
                 assert_sequence,
                 key,
                 json_response,
-                message)
+                key_message)
             assert_and_print_body(
                 response,
                 assert_item,
                 expected_json[key],
                 json_response[key],
-                message)
+                value_message)
     else:
         assert_and_print_body(
             response,
             assert_sequence,
             expected_json, json_response,
-            message)
+            value_message)
 
 
 def expect_json_not_contains(response, expected_json, path=None):
