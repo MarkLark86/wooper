@@ -133,9 +133,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make a GET request to some URI</span>
 
-<span class="sd">        *args, **kwargs:</span>
-<span class="sd">            uri: URI</span>
-<span class="sd">            rest of args is the same as in requests.get() as well</span>
+<span class="sd">        :param str uri: URI</span>
+
+<span class="sd">        rest of args is the same as in requests.get()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
@@ -143,10 +143,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make a POST request to some URI</span>
 
-<span class="sd">        *args, **kwargs:</span>
-<span class="sd">            uri: URI</span>
-<span class="sd">            data: request payload</span>
-<span class="sd">            rest of args is the same as in requests.get() as well</span>
+<span class="sd">        :param str uri: URI</span>
+<span class="sd">        :param data: request payload</span>
+<span class="sd">        :type data: str, list, dict</span>
+
+<span class="sd">        rest of args is the same as in requests.post()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_with_data</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
@@ -154,10 +155,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make a PATCH request to some URI</span>
 
-<span class="sd">        *args, **kwargs:</span>
-<span class="sd">            uri: URI</span>
-<span class="sd">            data: request payload</span>
-<span class="sd">            rest of args is the same as in requests.get() as well</span>
+<span class="sd">        :param str uri: URI</span>
+<span class="sd">        :param data: request payload</span>
+<span class="sd">        :type data: str, list, dict</span>
+
+<span class="sd">        rest of args is the same as in requests.patch()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_with_data</span><span class="p">(</span><span class="s">&#39;PATCH&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
@@ -165,10 +167,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make a PUT request to some URI</span>
 
-<span class="sd">        *args, **kwargs:</span>
-<span class="sd">            uri: URI</span>
-<span class="sd">            data: request payload</span>
-<span class="sd">            rest of args is the same as in requests.get() as well</span>
+<span class="sd">        :param str uri: URI</span>
+<span class="sd">        :param data: request payload</span>
+<span class="sd">        :type data: str, list, dict</span>
+
+<span class="sd">        rest of args is the same as in requests.put()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_with_data</span><span class="p">(</span><span class="s">&#39;PUT&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
@@ -176,9 +179,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make a DELETE request to some URI</span>
 
-<span class="sd">        *args, **kwargs:</span>
-<span class="sd">            uri: URI</span>
-<span class="sd">            rest of args is the same as in requests.get() as well</span>
+<span class="sd">        :param str uri: URI</span>
+
+<span class="sd">        rest of args is the same as in requests.delete()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;DELETE&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
