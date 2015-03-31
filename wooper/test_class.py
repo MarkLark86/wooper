@@ -17,6 +17,7 @@ from .expect import (
     expect_headers, expect_headers_contain,
     expect_json_length, expect_body_contains,
 )
+from .general import apply_path, WooperAssertionError
 
 
 class ApiMixin:
@@ -40,26 +41,17 @@ class ApiMixin:
     response = None
 
     def _apply_path(self, json_dict, path):
-        if not path:
-            return json_dict
-        path_elements = path.split('/')
-        for element in path_elements:
-            if element.startswith('['):
-                try:
-                    element = int(element.lstrip('[').rstrip(']'))
-                except ValueError as e:
-                    self.fail("Path can't be applied: {exception}."
-                              .format(exception=e.args))
-            try:
-                json_dict = json_dict[element]
-            except (IndexError, TypeError, KeyError):
-                self.fail(
-                    """Path can't be applied:
-no such index '{index}' in \"\"\"{dict}\"\"\"."""
-                    .format(index=element, dict=json_dict))
-        return json_dict
+        result = None
+        try:
+            result = apply_path(json_dict, path)
+        except WooperAssertionError as e:
+            self.fail("Path can't be applied: {exception}."
+                      .format(exception=e.args))
+        else:
+            return result
 
     def get_url(self, uri):
+        # get current base URL
         return self.server_url.rstrip('/') + uri
 
     def request(self, method, uri, *args,
@@ -89,22 +81,64 @@ no such index '{index}' in \"\"\"{dict}\"\"\"."""
         self.request(method, uri, *args, data=data, **kwargs)
 
     def GET(self, *args, **kwargs):
+        """
+        make a GET request to some URI
+
+        *args, **kwargs:
+            uri: URI
+            rest of args is the same as in requests.get() as well
+        """
         self.request('GET', *args, **kwargs)
 
     def POST(self, *args, **kwargs):
+        """
+        make a POST request to some URI
+
+        *args, **kwargs:
+            uri: URI
+            data: request payload
+            rest of args is the same as in requests.get() as well
+        """
         self.request_with_data('POST', *args, **kwargs)
 
     def PATCH(self, *args, **kwargs):
+        """
+        make a PATCH request to some URI
+
+        *args, **kwargs:
+            uri: URI
+            data: request payload
+            rest of args is the same as in requests.get() as well
+        """
         self.request_with_data('PATCH', *args, **kwargs)
 
     def PUT(self, *args, **kwargs):
+        """
+        make a PUT request to some URI
+
+        *args, **kwargs:
+            uri: URI
+            data: request payload
+            rest of args is the same as in requests.get() as well
+        """
         self.request_with_data('PUT', *args, **kwargs)
 
     def DELETE(self, *args, **kwargs):
+        """
+        make a DELETE request to some URI
+
+        *args, **kwargs:
+            uri: URI
+            rest of args is the same as in requests.get() as well
+        """
         self.request('DELETE', *args, **kwargs)
 
     @property
     def json_response(self):
+        """
+        :returns: response as json
+        :throws ValueError: if response is not a valid json
+        """
         try:
             return json.loads(self.response.text)
         except ValueError:

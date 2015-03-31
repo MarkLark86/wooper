@@ -16,7 +16,7 @@ def _format_message_text_and_body(response, message):
         except Exception:
             body = '%%%_not_text_%%%'
     return (
-        "{message}"
+        "{message}\n"
         "Response body:"
         '"""'
         "{body}"
