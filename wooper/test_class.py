@@ -60,7 +60,7 @@ no such index '{index}' in \"\"\"{dict}\"\"\"."""
         return json_dict
 
     def get_url(self, uri):
-        return self.server_url + uri
+        return self.server_url.rstrip('/') + uri
 
     def request(self, method, uri, *args,
                 headers=None, add_server=True, **kwargs):
