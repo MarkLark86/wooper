@@ -32,5 +32,8 @@ class TestGithubApi(ApiTestCase):
         })
         self.expect_json_match(
             "https://github.com/actionless",
-            "html_url"
+            path="html_url"
+        )
+        self.expect_json_match(
+            {"html_url": "https://github.com/actionless"}
         )
