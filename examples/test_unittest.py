@@ -24,7 +24,7 @@ class TestGithubApi(ApiTestCase):
             'Server': 'GitHub.com',
         })
 
-    def test_what_it_returns_login_and_id(self):
+    def test_what_user_item_has_login_and_id(self):
         self.GET("/users/actionless")
         self.expect_json_contains({
             "login": "actionless",
