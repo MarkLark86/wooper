@@ -149,6 +149,12 @@ REST API services.</p>
 <p>rest of args is the same as in requests.put()</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wooper.test_class.ApiMixin.enable_ssl_verification">
+<tt class="descname">enable_ssl_verification</tt><em class="property"> = True</em><a class="headerlink" href="#wooper.test_class.ApiMixin.enable_ssl_verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable SSL certificates&#8217; verification (default: True)</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wooper.test_class.ApiMixin.expect_body_contains">
 <tt class="descname">expect_body_contains</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="_modules/wooper/test_class.html#ApiMixin.expect_body_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wooper.test_class.ApiMixin.expect_body_contains" title="Permalink to this definition">¶</a></dt>
@@ -339,6 +345,24 @@ separated by slashes, ie &#8216;foo/bar/spam&#8217;, &#8216;foo/[0]/bar&#8217;</
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wooper.test_class.ApiMixin.print_headers">
+<tt class="descname">print_headers</tt><em class="property"> = False</em><a class="headerlink" href="#wooper.test_class.ApiMixin.print_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print requests&#8217; headers during test run</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wooper.test_class.ApiMixin.print_payload">
+<tt class="descname">print_payload</tt><em class="property"> = False</em><a class="headerlink" href="#wooper.test_class.ApiMixin.print_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print payload sent to the server during test run</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wooper.test_class.ApiMixin.print_url">
+<tt class="descname">print_url</tt><em class="property"> = False</em><a class="headerlink" href="#wooper.test_class.ApiMixin.print_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print URLs during test run</p>
 </dd></dl>
 
 </dd></dl>
