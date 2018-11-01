@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wooper.test_class &mdash; wooper 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="wooper 0.3.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">wooper 0.3.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wooper.test_class</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: test_class</span>
+<span class="sd">   :synopsis: Testclass and mixing for using together with unittest</span>
+
+<span class="sd">.. moduleauthor:: Yauhen Kirylau &lt;actionless.loveless@gmail.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Session</span>
+
+<span class="kn">from</span> <span class="nn">.expect</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">expect_status</span><span class="p">,</span> <span class="n">expect_status_in</span><span class="p">,</span>
+    <span class="n">expect_json</span><span class="p">,</span> <span class="n">expect_json_match</span><span class="p">,</span> <span class="n">expect_json_contains</span><span class="p">,</span>
+    <span class="n">expect_headers</span><span class="p">,</span> <span class="n">expect_headers_contain</span><span class="p">,</span>
+    <span class="n">expect_json_length</span><span class="p">,</span> <span class="n">expect_body_contains</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.general</span> <span class="kn">import</span> <span class="n">apply_path</span><span class="p">,</span> <span class="n">WooperAssertionError</span>
+
+
+<div class="viewcode-block" id="ApiMixin"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin">[docs]</a><span class="k">class</span> <span class="nc">ApiMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class can be used as a mixin to `unittest.TestCase</span>
+<span class="sd">    &lt;https://docs.python.org/3.4/library/unittest.html#unittest.TestCase&gt;`_</span>
+<span class="sd">    to provide additional methods for requesting, inspecting and testing</span>
+<span class="sd">    REST API services.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">server_url</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Server URL &quot;&quot;&quot;</span>
+
+    <span class="n">enable_ssl_verification</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="sd">&quot;&quot;&quot; Enable SSL certificates&#39; verification (default: True) &quot;&quot;&quot;</span>
+
+    <span class="n">print_url</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="sd">&quot;&quot;&quot; Print URLs during test run &quot;&quot;&quot;</span>
+
+    <span class="n">print_payload</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="sd">&quot;&quot;&quot; Print payload sent to the server during test run &quot;&quot;&quot;</span>
+
+    <span class="n">print_headers</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="sd">&quot;&quot;&quot; Print requests&#39; headers during test run &quot;&quot;&quot;</span>
+
+    <span class="n">maxDiff</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_apply_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_dict</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">apply_path</span><span class="p">(</span><span class="n">json_dict</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">WooperAssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;Path can&#39;t be applied: {exception}.&quot;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+        <span class="c1"># get current base URL</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">uri</span>
+
+    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_server</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">add_server</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">uri</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_url</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{method} {url}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_payload</span> <span class="ow">and</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">pprint</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_headers</span><span class="p">:</span>
+            <span class="n">pprint</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">enable_ssl_verification</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">request_with_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>  <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ApiMixin.GET"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.GET">[docs]</a>    <span class="k">def</span> <span class="nf">GET</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make a GET request to some URI</span>
+
+<span class="sd">        :param str uri: URI</span>
+
+<span class="sd">        rest of args is the same as in requests.get()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.POST"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.POST">[docs]</a>    <span class="k">def</span> <span class="nf">POST</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make a POST request to some URI</span>
+
+<span class="sd">        :param str uri: URI</span>
+<span class="sd">        :param data: request payload</span>
+<span class="sd">        :type data: str, list, dict</span>
+
+<span class="sd">        rest of args is the same as in requests.post()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_with_data</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.PATCH"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.PATCH">[docs]</a>    <span class="k">def</span> <span class="nf">PATCH</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make a PATCH request to some URI</span>
+
+<span class="sd">        :param str uri: URI</span>
+<span class="sd">        :param data: request payload</span>
+<span class="sd">        :type data: str, list, dict</span>
+
+<span class="sd">        rest of args is the same as in requests.patch()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_with_data</span><span class="p">(</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.PUT"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.PUT">[docs]</a>    <span class="k">def</span> <span class="nf">PUT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make a PUT request to some URI</span>
+
+<span class="sd">        :param str uri: URI</span>
+<span class="sd">        :param data: request payload</span>
+<span class="sd">        :type data: str, list, dict</span>
+
+<span class="sd">        rest of args is the same as in requests.put()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_with_data</span><span class="p">(</span><span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.DELETE"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.DELETE">[docs]</a>    <span class="k">def</span> <span class="nf">DELETE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make a DELETE request to some URI</span>
+
+<span class="sd">        :param str uri: URI</span>
+
+<span class="sd">        rest of args is the same as in requests.delete()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ApiMixin.json_response"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.json_response">[docs]</a>    <span class="k">def</span> <span class="nf">json_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: response as json</span>
+<span class="sd">        :throws ValueError: if response is not a valid json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s1">&#39;Response in not a valid JSON.&#39;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">inspect_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">json_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_response</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">json_response</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inspect_body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inspect_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inspect_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">))</span>
+
+<div class="viewcode-block" id="ApiMixin.expect_status"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_status">[docs]</a>    <span class="k">def</span> <span class="nf">expect_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if response status equals given code</span>
+
+<span class="sd">        :param int code: Expected status code</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_status_in"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_status_in">[docs]</a>    <span class="k">def</span> <span class="nf">expect_status_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if response status equals to one of the provided</span>
+
+<span class="sd">        :param list codes: List of valid status codes</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_status_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_json"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_json">[docs]</a>    <span class="k">def</span> <span class="nf">expect_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if json response equals some json,</span>
+
+<span class="sd">        :param expected_json: JSON object to compare with</span>
+<span class="sd">        :type expected_json: str, list, dict</span>
+
+<span class="sd">        :param path: Path inside response json,</span>
+<span class="sd">            separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">        :type path: str, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">expect_json</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_json_match"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_json_match">[docs]</a>    <span class="k">def</span> <span class="nf">expect_json_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if json response partly matches some json,</span>
+
+<span class="sd">        :param expected_json: JSON object to compare with</span>
+<span class="sd">        :type expected_json: str, list, dict</span>
+
+<span class="sd">        :param path: Path inside response json,</span>
+<span class="sd">            separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">        :type path: str, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_json_match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_json_contains"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_json_contains">[docs]</a>    <span class="k">def</span> <span class="nf">expect_json_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                             <span class="n">reverse_expectation</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if json response contains some json subset,</span>
+
+<span class="sd">        :param expected_json: JSON object to compare with</span>
+<span class="sd">        :type expected_json: str, list, dict</span>
+
+<span class="sd">        :param path: Path inside response json,</span>
+<span class="sd">            separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">        :type path: str, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_json_contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span>
+                             <span class="n">reverse_expectation</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_json_not_contains"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_json_not_contains">[docs]</a>    <span class="k">def</span> <span class="nf">expect_json_not_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if json response not contains some json subset,</span>
+
+<span class="sd">        :param expected_json: JSON object to compare with</span>
+<span class="sd">        :type expected_json: str, list, dict</span>
+
+<span class="sd">        :param path: Path inside response json,</span>
+<span class="sd">            separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">        :type path: str, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_json_contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span>
+                             <span class="n">reverse_expectation</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_headers"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_headers">[docs]</a>    <span class="k">def</span> <span class="nf">expect_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">partly</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if response headers values are equal to given</span>
+
+<span class="sd">        :param dict headers: Dict with headers and their values,</span>
+<span class="sd">            like { &quot;Header1&quot;: &quot;ExpectedValue1&quot; }</span>
+
+<span class="sd">        :param partly: Compare full header value or</span>
+<span class="sd">            check if the value includes expected one.</span>
+<span class="sd">        :type partly: bool, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_headers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">partly</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_headers_contain"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_headers_contain">[docs]</a>    <span class="k">def</span> <span class="nf">expect_headers_contain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if response headers contain a given header</span>
+
+<span class="sd">        :param str header: Expected header name.</span>
+
+<span class="sd">        :param value: Expected header value.</span>
+<span class="sd">        :type value: str, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_headers_contain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_json_length"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_json_length">[docs]</a>    <span class="k">def</span> <span class="nf">expect_json_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if count of objects in json response equals provided length,</span>
+
+<span class="sd">        :param int length: Expected number of objects inside json</span>
+<span class="sd">            or length of the string</span>
+
+<span class="sd">        :param path: Path inside response json,</span>
+<span class="sd">            separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">        :type path: str, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_json_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApiMixin.expect_body_contains"><a class="viewcode-back" href="../../test_class.html#wooper.test_class.ApiMixin.expect_body_contains">[docs]</a>    <span class="k">def</span> <span class="nf">expect_body_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if response body contains some text</span>
+
+<span class="sd">        :param str text: Expected text</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expect_body_contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+</div></div>
+<span class="k">class</span> <span class="nc">ApiTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="n">ApiMixin</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/wooper.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../expect.html">Expectations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_class.html">Test class for UnitTest</a></li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">wooper 0.3.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, actionless.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

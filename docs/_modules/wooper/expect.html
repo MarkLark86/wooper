@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wooper.expect &mdash; wooper 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="wooper 0.3.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">wooper 0.3.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wooper.expect</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: expect</span>
+<span class="sd">   :synopsis: Expectations</span>
+
+<span class="sd">Expectation helper functions are receiving response object</span>
+<span class="sd">(for example from `requests &lt;http://docs.python-requests.org/&gt;`_ lib)</span>
+<span class="sd">as first argument.</span>
+<span class="sd">These helpers make testing API response bodies and headers easy with minimal</span>
+<span class="sd">time and effort.</span>
+
+<span class="sd">.. moduleauthor:: Yauhen Kirylau &lt;actionless.loveless@gmail.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">.assertions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">assert_equal</span><span class="p">,</span> <span class="n">assert_not_equal</span><span class="p">,</span>
+    <span class="n">assert_in</span><span class="p">,</span> <span class="n">assert_not_in</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.general</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">parse_json_input</span><span class="p">,</span> <span class="n">parse_json_response</span><span class="p">,</span> <span class="n">apply_path</span><span class="p">,</span> <span class="n">get_body</span><span class="p">,</span>
+    <span class="n">assert_and_print_body</span><span class="p">,</span> <span class="n">WooperAssertionError</span><span class="p">,</span> <span class="n">fail_and_print_body</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="expect_status"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_status">[docs]</a><span class="k">def</span> <span class="nf">expect_status</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if response status equals given code</span>
+
+<span class="sd">    :param int code: Expected status code</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">assert_and_print_body</span><span class="p">(</span>
+        <span class="n">response</span><span class="p">,</span>
+        <span class="n">assert_equal</span><span class="p">,</span>
+        <span class="n">code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+        <span class="s2">&quot;Status code not matches.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_status_in"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_status_in">[docs]</a><span class="k">def</span> <span class="nf">expect_status_in</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">codes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if response status equals to one of the provided</span>
+
+<span class="sd">    :param list codes: List of valid status codes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">assert_and_print_body</span><span class="p">(</span>
+        <span class="n">response</span><span class="p">,</span>
+        <span class="n">assert_in</span><span class="p">,</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span>
+        <span class="s2">&quot;Status code not matches.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_json"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_json">[docs]</a><span class="k">def</span> <span class="nf">expect_json</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if json response equals some json,</span>
+
+<span class="sd">    :param expected_json: JSON object to compare with</span>
+<span class="sd">    :type expected_json: str, list, dict</span>
+
+<span class="sd">    :param path: Path inside response json,</span>
+<span class="sd">        separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">    :type path: str, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">expected_json</span> <span class="o">=</span> <span class="n">parse_json_input</span><span class="p">(</span><span class="n">expected_json</span><span class="p">)</span>
+    <span class="n">json_response</span> <span class="o">=</span> <span class="n">apply_path</span><span class="p">(</span><span class="n">parse_json_response</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">path</span><span class="p">)</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">expected_json</span><span class="p">,</span> <span class="n">json_response</span><span class="p">,</span> <span class="s2">&quot;JSON not matches&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_json_match"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_json_match">[docs]</a><span class="k">def</span> <span class="nf">expect_json_match</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if json response partly matches some json,</span>
+
+<span class="sd">    :param expected_json: JSON object to compare with</span>
+<span class="sd">    :type expected_json: str, list, dict</span>
+
+<span class="sd">    :param path: Path inside response json,</span>
+<span class="sd">        separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">    :type path: str, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_json_match</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="n">expected_data</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+                <span class="n">assert_in</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">response_data</span><span class="p">)</span>
+                <span class="n">_json_match</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">message</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">expected_item</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">for</span> <span class="n">response_item</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">_json_match</span><span class="p">(</span><span class="n">response_item</span><span class="p">,</span> <span class="n">expected_item</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">WooperAssertionError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="k">break</span>
+                <span class="n">assert_equal</span><span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">assert_equal</span><span class="p">(</span><span class="n">expected_data</span><span class="p">,</span> <span class="n">response_data</span><span class="p">)</span>
+
+    <span class="n">expected_json</span> <span class="o">=</span> <span class="n">parse_json_input</span><span class="p">(</span><span class="n">expected_json</span><span class="p">)</span>
+    <span class="n">json_response</span> <span class="o">=</span> <span class="n">apply_path</span><span class="p">(</span><span class="n">parse_json_response</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_json_match</span><span class="p">(</span><span class="n">json_response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">WooperAssertionError</span><span class="p">:</span>
+        <span class="n">fail_and_print_body</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s2">&quot;JSON not matches&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_json_contains"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_json_contains">[docs]</a><span class="k">def</span> <span class="nf">expect_json_contains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">reverse_expectation</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if json response contains some json subset,</span>
+
+<span class="sd">    :param expected_json: JSON object to compare with</span>
+<span class="sd">    :type expected_json: str, list, dict</span>
+
+<span class="sd">    :param path: Path inside response json,</span>
+<span class="sd">        separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">    :type path: str, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">assert_item</span> <span class="o">=</span> <span class="n">assert_equal</span>
+    <span class="n">assert_sequence</span> <span class="o">=</span> <span class="n">assert_in</span>
+    <span class="n">key_message</span> <span class="o">=</span> <span class="s2">&quot;JSON response does not contain such key&quot;</span>
+    <span class="n">value_message</span> <span class="o">=</span> <span class="s2">&quot;JSON response does not contain such value&quot;</span>
+    <span class="k">if</span> <span class="n">reverse_expectation</span><span class="p">:</span>
+        <span class="n">assert_item</span> <span class="o">=</span> <span class="n">assert_not_equal</span>
+        <span class="n">assert_sequence</span> <span class="o">=</span> <span class="n">assert_not_in</span>
+        <span class="n">key_message</span> <span class="o">=</span> <span class="s2">&quot;JSON response contains such key&quot;</span>
+        <span class="n">value_message</span> <span class="o">=</span> <span class="s2">&quot;JSON response contains such value&quot;</span>
+
+    <span class="n">expected_json</span> <span class="o">=</span> <span class="n">parse_json_input</span><span class="p">(</span><span class="n">expected_json</span><span class="p">)</span>
+    <span class="n">json_response</span> <span class="o">=</span> <span class="n">apply_path</span><span class="p">(</span><span class="n">parse_json_response</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expected_json</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_response</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_json</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">reverse_expectation</span><span class="p">:</span>
+                <span class="n">assert_and_print_body</span><span class="p">(</span>
+                    <span class="n">response</span><span class="p">,</span>
+                    <span class="n">assert_sequence</span><span class="p">,</span>
+                    <span class="n">key</span><span class="p">,</span>
+                    <span class="n">json_response</span><span class="p">,</span>
+                    <span class="n">key_message</span><span class="p">)</span>
+            <span class="n">assert_and_print_body</span><span class="p">(</span>
+                <span class="n">response</span><span class="p">,</span>
+                <span class="n">assert_item</span><span class="p">,</span>
+                <span class="n">expected_json</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">json_response</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">value_message</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">assert_and_print_body</span><span class="p">(</span>
+            <span class="n">response</span><span class="p">,</span>
+            <span class="n">assert_sequence</span><span class="p">,</span>
+            <span class="n">expected_json</span><span class="p">,</span> <span class="n">json_response</span><span class="p">,</span>
+            <span class="n">value_message</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_json_not_contains"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_json_not_contains">[docs]</a><span class="k">def</span> <span class="nf">expect_json_not_contains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if json response not contains some json subset,</span>
+
+<span class="sd">    :param expected_json: JSON object to compare with</span>
+<span class="sd">    :type expected_json: str, list, dict</span>
+
+<span class="sd">    :param path: Path inside response json,</span>
+<span class="sd">        separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">    :type path: str, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">expect_json_contains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">expected_json</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span>
+                                <span class="n">reverse_expectation</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_headers_contain"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_headers_contain">[docs]</a><span class="k">def</span> <span class="nf">expect_headers_contain</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if response headers contain a given header</span>
+
+<span class="sd">    :param str header: Expected header name.</span>
+
+<span class="sd">    :param value: Expected header value.</span>
+<span class="sd">    :type value: str, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">assert_in</span><span class="p">(</span><span class="n">header</span><span class="p">,</span>
+              <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>
+              <span class="s2">&quot;No such header in response.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+        <span class="n">assert_equal</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>
+                     <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header</span><span class="p">],</span>
+                     <span class="s2">&quot;Header value not matches.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_headers"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_headers">[docs]</a><span class="k">def</span> <span class="nf">expect_headers</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">partly</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if response headers values are equal to given</span>
+
+<span class="sd">    :param dict headers: Dict with headers and their values,</span>
+<span class="sd">        like { &quot;Header1&quot;: &quot;ExpectedValue1&quot; }</span>
+
+<span class="sd">    :param partly: Compare full header value or</span>
+<span class="sd">        check if the value includes expected one.</span>
+<span class="sd">    :type partly: bool, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">expect_headers_contain</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">partly</span><span class="p">:</span>
+            <span class="n">assert_in</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                      <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                      <span class="s2">&quot;Header not matches.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">assert_equal</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                         <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                         <span class="s2">&quot;Header not matches.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_json_length"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_json_length">[docs]</a><span class="k">def</span> <span class="nf">expect_json_length</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if count of objects in json response equals provided length,</span>
+
+<span class="sd">    :param int length: Expected number of objects inside json</span>
+<span class="sd">        or length of the string</span>
+
+<span class="sd">    :param path: Path inside response json,</span>
+<span class="sd">        separated by slashes, ie &#39;foo/bar/spam&#39;, &#39;foo/[0]/bar&#39;</span>
+<span class="sd">    :type path: str, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">json_response</span> <span class="o">=</span> <span class="n">apply_path</span><span class="p">(</span><span class="n">parse_json_response</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">path</span><span class="p">)</span>
+    <span class="n">assert_in</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">json_response</span><span class="p">),</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span>
+              <span class="s2">&quot;&#39;{}&#39; isn&#39;t json.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json_response</span><span class="p">))</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">json_response</span><span class="p">),</span>
+                 <span class="s2">&quot;JSON objects count not matches.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="expect_body_contains"><a class="viewcode-back" href="../../expect.html#wooper.expect.expect_body_contains">[docs]</a><span class="k">def</span> <span class="nf">expect_body_contains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    checks if response body contains some text</span>
+
+<span class="sd">    :param str text: Expected text</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">assert_in</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">get_body</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="s2">&quot;Body not contains &#39;{}&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/wooper.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../expect.html">Expectations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_class.html">Test class for UnitTest</a></li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">wooper 0.3.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, actionless.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
