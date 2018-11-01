@@ -7,9 +7,10 @@
 """
 
 import json
-from requests import Session
 from pprint import pprint
 from unittest import TestCase
+
+from requests import Session
 
 from .expect import (
     expect_status, expect_status_in,
@@ -31,10 +32,19 @@ class ApiMixin:
     server_url = None
     """ Server URL """
 
-    maxDiff = None
+    enable_ssl_verification = True
+    """ Enable SSL certificates' verification (default: True) """
+
     print_url = False
+    """ Print URLs during test run """
+
     print_payload = False
+    """ Print payload sent to the server during test run """
+
     print_headers = False
+    """ Print requests' headers during test run """
+
+    maxDiff = None
 
     session = None
 
@@ -73,9 +83,10 @@ class ApiMixin:
 
         self.response = self.session.request(
             method, url, *args,
-            verify=False, headers=headers, **kwargs)
+            verify=self.enable_ssl_verification, headers=headers, **kwargs
+        )
 
-    def request_with_data(self, method,  uri, data='', *args, **kwargs):
+    def request_with_data(self, method,  uri, *args, data='', **kwargs):
         if isinstance(data, dict) or isinstance(data, list):
             data = json.dumps(data)
         self.request(method, uri, *args, data=data, **kwargs)

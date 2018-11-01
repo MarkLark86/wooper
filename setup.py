@@ -1,12 +1,24 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from codecs import open
+from os import path
+from distutils.core import setup
 
-LONG_DESCRIPTION = open('README.md').read()
+from setuptools import find_packages
+
+HERE = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
+
+# Get the long description from the README file
+with open(path.join(HERE, 'requirements.txt'), encoding='utf-8') as f:
+    REQUREMENTS = f.read().splitlines()
 
 setup(
     name='wooper',
-    version="0.4.2",
+    version="0.4.3",
     description="FrisbyJS-inspired REST API testing helpers and steps \
 for 'behave' behavior-driven development testing library",
     long_description=LONG_DESCRIPTION,
@@ -17,10 +29,7 @@ for 'behave' behavior-driven development testing library",
     platforms=["any"],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        'requests==2.3.0',
-        'behave==1.2.5'
-    ],
+    install_requires=REQUREMENTS,
     classifiers=[
         # @TODO: change status
         'Development Status :: 4 - Beta',
@@ -28,8 +37,19 @@ for 'behave' behavior-driven development testing library",
         # @TODO: add testers
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
-        # @TODO: add version
         'Programming Language :: Python',
         'Topic :: Software Development',
+
+        # Pick your license as you wish
+        'License :: OSI Approved :: GPL3 License',
+
+        # Specify the Python versions you support here. In particular, ensure
+        # that you indicate whether you support Python 2, Python 3 or both.
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 )

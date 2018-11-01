@@ -39,8 +39,16 @@ def request(context, method, uri, data=None, *args,
         pprint(headers)
 
     context.response = context.session.request(
-        method, url, data=data, *args,
-        verify=False, headers=headers, **kwargs)
+        method,
+        url,
+        *args,
+        data=data,
+        headers=headers,
+        verify=context.template_variables.get(
+            'enable_ssl_verification', False
+        ),
+        **kwargs
+    )
 
 
 def GET(context, uri, *args, **kwargs):
